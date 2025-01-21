@@ -1,0 +1,25 @@
+{
+  "name": "freshiebot",
+  "version": "1.0.0",
+  "description": "Telegram tool that gets new launches on pumpfun and checks for new wallet accumulation",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@project-serum/anchor": "^0.26.0",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.0",
+    "bignumber.js": "^9.1.2",
+    "borsh": "^2.0.0",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.7",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.9.2",
+    "node-cron": "^3.0.3",
+    "node-telegram-bot-api": "^0.63.0"
+  }
+}
