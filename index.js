@@ -68,7 +68,7 @@ bot.on('callback_query', async (query) => {
     user.save().then(()=>{console.log("User saved")})
   }
 });
-
+let coinsAdded = 0
 connection.onLogs(pumpFunProgramId, async(log) => {
     const {signature,logs} = log
     if(logs.some(sentence => sentence.includes('Program log: Instruction: Create'))){
@@ -93,7 +93,8 @@ connection.onLogs(pumpFunProgramId, async(log) => {
                     console.log("Mint Address: ",mint)
                     console.log("token info: ",deserialize)
                     await token.save()
-                    
+                    coinsAdded++
+                    console.log("Coins Added: ", coinsAdded)
                   }
               }catch(e){
                   console.error(e)

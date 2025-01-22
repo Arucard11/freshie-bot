@@ -9,11 +9,7 @@ import * as borsh from 'borsh';
 import TelegramBot from 'node-telegram-bot-api'
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false });
-
-async function getSolPrice(){
-    const solPrice = await(await fetch("https://frontend-api-v2.pump.fun/sol-price")).json()
-    return solPrice.solPrice
-  }
+let deleted = 0
 
  async function getMarketCap(mint){
     // const LAMPORTS_PER_SOL = 10n ** 9n
@@ -48,6 +44,7 @@ export async function checkTopHolders(){
                         if(holderInfo){
                             let users = await User.find({monitor: true})
                             for(let user of users){
+                                await new Promise(resolve => setTimeout(resolve, 1000))
                                 const walletLinks = holderInfo.owners
                                 .map(
                                     (wallet) =>
@@ -74,10 +71,12 @@ export async function checkTopHolders(){
                         }
                         }
                 
-                    }
+                }
                 
             await Token.findByIdAndDelete(token._id)
+            deleted++
             console.log("Token deleted")
+            console.log("Tokens deleted: ",deleted)
             }
         
         }

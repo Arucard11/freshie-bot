@@ -15,11 +15,11 @@ export async function getHolderInfo(mint) {
   
   if(largestHolders.length >= 3){
     for(let account of largestHolders){
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       let accountData = await connection.getParsedAccountInfo(account.address)
       if(accountData && accountData.value &&  accountData.value.data){
       let owner = accountData.value.data.parsed.info.owner
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       let signatures = await connection.getSignaturesForAddress(new PublicKey(owner), {limit: 20})
       
       if(signatures.length < 20 && owner !== bondingCurve.toBase58() && owner !== associatedBondingCurve.toBase58() && owner !== owners[owners.length-1] ){
