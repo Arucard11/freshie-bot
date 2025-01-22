@@ -57,7 +57,7 @@ export async function checkTopHolders(){
                             
                            let {image} = await (await fetch(token.uri)).json()
                            console.log("Image: ",image)
-                            const MESSAGE = `<b>🚀 Fresh wallets are buying this PumpFun coin! 💎</b>\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                            const MESSAGE = `<b> Fresh/Aged Wallets are buying  💎</b>\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
                             
                                 bot.sendMessage(user.chatId,MESSAGE, {
                                     parse_mode: 'HTML',
@@ -84,4 +84,3 @@ export async function checkTopHolders(){
     }
 }
 
-checkTopHolders()

@@ -11,7 +11,7 @@ import User from "./DB/userSchema.js";
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
-const connection = new Connection(`https://api.mainnet-beta.solana.com`);
+const connection = new Connection(`https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`,"confirmed");
 const pumpFunProgramId = new PublicKey("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P");  // replace with the program ID you want to track
 connectDB()
 
@@ -69,45 +69,42 @@ bot.on('callback_query', async (query) => {
   }
 });
 
-connection.onLogs(pumpFunProgramId,(log) => {
-  const {signature,logs} = log
- 
-  if(logs.some(sentence => sentence.includes('Program log: Instruction: Create'))){
-    delay(1000).finally(()=>{})
-    connection.getParsedTransaction(signature,{
-      maxSupportedTransactionVersion: 0,
-    }).then(tx => {
-      if(tx && tx.transaction){
-        tx.transaction.message.instructions.forEach(instruction => {
-          if(instruction.programId.toBase58() === pumpFunProgramId.toBase58() && instruction.accounts?.length === 14){
-            let mint = instruction.accounts[0].toBase58()
-            let deserialize = deserializeToken(instruction.data)
-            let {bondingCurve} = getBondingCurves(new PublicKey(mint))
-            try{
-              let token = new Token({
-                name: deserialize.name,
-                symbol: deserialize.symbol,
-                uri: deserialize.uri,
-                mintAddress: mint,
-                bondingCurveAddress: bondingCurve.toBase58()
-              })
-              token.save().then(()=>{})
-            }catch(e){
-              if(e){
-                console.error(e);
-                return;
+connection.onLogs(pumpFunProgramId, async(log) => {
+    const {signature,logs} = log
+    if(logs.some(sentence => sentence.includes('Program log: Instruction: Create'))){
+      await delay(1000)
+      let tx = await connection.getParsedTransaction(signature,{maxSupportedTransactionVersion: 0})
+        if(tx && tx.transaction){
+          for(let instruction  of tx.transaction.message.instructions) {
+            if(instruction.programId.toBase58() === pumpFunProgramId.toBase58() && instruction.accounts?.length === 14){
+              let mint = instruction.accounts[0].toBase58()
+              let deserialize = deserializeToken(instruction.data)
+              let {bondingCurve} = getBondingCurves(new PublicKey(mint))
+              try{
+                  let usedToken = await Token.findOne({mintAddress: mint})
+                  if(!usedToken){
+                    let token = new Token({
+                      name: deserialize.name,
+                      symbol: deserialize.symbol,
+                      uri: deserialize.uri,
+                      mintAddress: mint,
+                      bondingCurveAddress: bondingCurve.toBase58()
+                    })
+                    console.log("Mint Address: ",mint)
+                    console.log("token info: ",deserialize)
+                    await token.save()
+                    
+                  }
+              }catch(e){
+                  console.error(e)
+                  return
               }
             }
-              //  console.log("Mint Address: ",mint)
-              //  console.log("token info: ",deserialize)
-              
           }
-        })
-      }
-    
-    })
-    
-  }
+        }
+          
+          
+    }
     
 });
 
