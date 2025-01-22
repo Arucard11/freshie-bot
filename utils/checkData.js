@@ -49,22 +49,23 @@ export async function checkTopHolders(){
                             let users = await User.find({monitor: true})
                             for(let user of users){
                                 const walletLinks = holderInfo.owners
-                            .map(
-                            (wallet) =>
-                                `👛 <a href="https://solscan.io/account/${wallet}">${wallet}</a>\n`
-                            )
-                            .join('');
+                                .map(
+                                    (wallet) =>
+                                        `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                )
+                                .join('');
                             
                            let {image} = await (await fetch(token.uri)).json()
                            console.log("Image: ",image)
-                            const MESSAGE = `<b> Fresh/Aged Wallets are buying  💎</b>\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                            const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
                             
-                                bot.sendMessage(user.chatId,MESSAGE, {
+                                bot.sendPhoto(user.chatId,image.replace("https://ipfs.io/","https://pump.mypinata.cloud/"), {
                                     parse_mode: 'HTML',
+                                    caption: MESSAGE,
                                     reply_markup: {
                                         inline_keyboard: [
                                             [
-                                                { text: 'Photon', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
                                             ]
                                         ]
                                     }
@@ -75,7 +76,6 @@ export async function checkTopHolders(){
                 
                     }
                 
-            console.log("Token: ",token.mintAddress)
             await Token.findByIdAndDelete(token._id)
             console.log("Token deleted")
             }

@@ -24,7 +24,7 @@ export async function getHolderInfo(mint) {
       
       if(signatures.length < 20 && owner !== bondingCurve.toBase58() && owner !== associatedBondingCurve.toBase58() && owner !== owners[owners.length-1] ){
         console.log("Owner: ",owner)
-        owners.push(owner)
+        owners.push({owner,amount:account.uiAmount})
         amountOfSupply += account.uiAmount      
       }
     }
