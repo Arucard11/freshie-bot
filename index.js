@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv"
-dotenv.config()
+dotenv.config({override: true})
 import { Connection, PublicKey} from "@solana/web3.js";
 import { deserializeToken } from "./utils/testDeserialize.js";
 import Token from "./DB/tokenSchema.js"
