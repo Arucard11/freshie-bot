@@ -40,7 +40,7 @@ bot.onText(/\/start/, async(msg) => {
 });
 
 bot.onText(/\/menu/, async(msg) => {
-  bot.sendMessage(msg.chat.id, 'Welcome to the Freshie Bot! I will notify you when a new token is created on pumpfun with new fresh wallets buying. Enjoy!', {  
+  bot.sendMessage(msg.chat.id, 'Press start monitoring to get notifs from me :)', {  
     reply_markup: {
       inline_keyboard:  [
         [

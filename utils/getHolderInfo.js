@@ -6,7 +6,7 @@ import { getBondingCurves } from './getBondingCurve.js'
 const connection = new Connection(`https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`)
 
 export async function getHolderInfo(mint) {
-  await new Promise(resolve => setTimeout(resolve, 5000)) 
+  await new Promise(resolve => setTimeout(resolve, 1000)) 
   let {bondingCurve,associatedBondingCurve} = getBondingCurves(new PublicKey(mint))
   console.log("Mint largest holders: ",mint)
   const largestHolders = (await connection.getTokenLargestAccounts(new PublicKey(mint))).value
