@@ -14,7 +14,7 @@ async function getSolPrice(){
     const solPrice = await(await fetch("https://frontend-api-v2.pump.fun/sol-price")).json()
     return solPrice.solPrice
   }
-connectDB()
+
  async function getMarketCap(mint){
     // const LAMPORTS_PER_SOL = 10n ** 9n
     // const DECIMALS = 10n ** 6n
