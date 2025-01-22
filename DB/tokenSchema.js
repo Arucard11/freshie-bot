@@ -20,6 +20,6 @@ const tokenSchema = new Schema({
     },
 });
 
-const Token = model('', tokenSchema);
+const Token = model('Token', tokenSchema,"fresh");
 
 export default Token;
