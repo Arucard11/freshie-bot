@@ -57,7 +57,7 @@ export async function checkTopHolders(){
                             
                            let {image} = await (await fetch(token.uri)).json()
                            console.log("Image: ",image)
-                            const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                            const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
                             
                                 bot.sendPhoto(user.chatId,image.replace("https://ipfs.io/","https://pump.mypinata.cloud/"), {
                                     parse_mode: 'HTML',
