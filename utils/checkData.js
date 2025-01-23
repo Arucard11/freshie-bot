@@ -170,7 +170,7 @@ export async function checkTopHoldersLast(){
         let last = Math.floor(allTokens.length/6)
         let remainder = allTokens.length % 6
         let tokens = allTokens.slice(2*last, (last*3))
-         if(tokens.length > 10){
+         if(tokens.length > 5){
             console.log("Tokens Last: ",tokens.length)
              for(let token of tokens){
                 if(!token.checked){
@@ -366,7 +366,7 @@ export async function checkTopHoldersComplete(){
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
             let tokens = allTokens.slice( (5*last),(5*last) + remainder)
-         if(tokens.length > 10){
+         if(tokens.length > 3){
             console.log("Tokens Complete: ",tokens.length)
              for(let token of tokens){
                 if(!token.checked){
@@ -466,15 +466,14 @@ export async function checkTopHoldersAgainFirst(){
                                  });
                              
                              }
-                         
-                 
+                    
+                             token.marketCap = marketCap
+                             await token.save()
                  }
                  
-               
-             }
-         
-         }
-     }
+            }
+        }
+    }
 }
 export async function checkTopHoldersAgainSecond(){
     const THIRTY_MINUTES_AGO = new Date(Date.now() - 30 * 60 * 1000);
@@ -519,8 +518,9 @@ export async function checkTopHoldersAgainSecond(){
                              }
                          
                  
+                             token.marketCap = marketCap
+                             await token.save()
                  }
-                 
                
              }
          
