@@ -40,7 +40,7 @@ export async function checkTopHoldersFirst(){
         for(let token of tokens){
            if(!token.checked){
                let marketCap = await getMarketCap(token.mintAddress)
-               console.log("Market Cap Complete: ",marketCap)
+               console.log("FIRST: ",marketCap)
                if(marketCap >= 8000){
                        let holderInfo = await getHolderInfo(token.mintAddress)
                        if(holderInfo){
@@ -105,7 +105,7 @@ export async function checkTopHoldersMiddle(){
              for(let token of tokens){
                 if(!token.checked){
                     let marketCap = await getMarketCap(token.mintAddress)
-                    console.log("Market Cap Complete: ",marketCap)
+                    console.log("MIDDLE: ",marketCap)
                     if(marketCap >= 8000){
                             let holderInfo = await getHolderInfo(token.mintAddress)
                             if(holderInfo){
@@ -171,7 +171,7 @@ export async function checkTopHoldersLast(){
              for(let token of tokens){
                 if(!token.checked){
                     let marketCap = await getMarketCap(token.mintAddress)
-                    console.log("Market Cap Complete: ",marketCap)
+                    console.log("LAST: ",marketCap)
                     if(marketCap >= 8000){
                             // await new Promise(resolve => setTimeout(resolve, 1000))
                             let holderInfo = await getHolderInfo(token.mintAddress)
@@ -237,7 +237,7 @@ export async function checkTopHoldersFinal(){
              for(let token of tokens){
                 if(!token.checked){
                     let marketCap = await getMarketCap(token.mintAddress)
-                    console.log("Market Cap Complete: ",marketCap)
+                    console.log("FINAL: ",marketCap)
                     if(marketCap >= 8000){
                             let holderInfo = await getHolderInfo(token.mintAddress)
                             if(holderInfo){
@@ -301,7 +301,7 @@ export async function checkTopHoldersEnd(){
              for(let token of tokens){
                 if(!token.checked){
                     let marketCap = await getMarketCap(token.mintAddress)
-                    console.log("Market Cap Complete: ",marketCap)
+                    console.log("END: ",marketCap)
                     if(marketCap >= 8000){
                             // await new Promise(resolve => setTimeout(resolve, 1000))
                             let holderInfo = await getHolderInfo(token.mintAddress)
