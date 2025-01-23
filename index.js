@@ -141,6 +141,7 @@ bot.on('callback_query', async (query) => {
         });
 
         console.log(`Deleted ${result.deletedCount} tokens checked more than 1 hour ago`);
+        bot.sendMessage(1767667773, `Deleted ${result.deletedCount} tokens checked more than 1 hour ago`);
     } catch (error) {
         console.error('Error deleting old tokens:', error);
     }
