@@ -130,14 +130,21 @@ bot.on('callback_query', async (query) => {
     });
   });
 
-  cron.schedule('0 */2 * * *', async() => {
-    const TWO_HOURS_AGO = Date.now() - 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-    await Token.deleteMany({
-      checked: true, // Match items where checked is true
-      createdAt: { $lt: TWO_HOURS_AGO }, // Match items created more than 6 hours ago
-    });
-    console.log('Deleted tokens checked more than 2 hours ago');
-  });
+  cron.schedule('0 * * * *', async () => {
+    try {
+        const ONE_HOUR_AGO = new Date(Date.now() - 1 * 60 * 60 * 1000); // 1 hour ago
+        
+        // Delete tokens checked more than 1 hour ago
+        const result = await Token.deleteMany({
+            checked: true, // Match items where checked is true
+            createdAt: { $lte: ONE_HOUR_AGO }, // Match items created more than 1 hour ago
+        });
+
+        console.log(`Deleted ${result.deletedCount} tokens checked more than 1 hour ago`);
+    } catch (error) {
+        console.error('Error deleting old tokens:', error);
+    }
+});;
   
   
  

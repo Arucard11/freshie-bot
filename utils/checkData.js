@@ -429,28 +429,26 @@ export async function checkTopHoldersComplete(){
 export async function checkTopHoldersAgainFirst(){
     const THIRTY_MINUTES_AGO = new Date(Date.now() - 30 * 60 * 1000);  
     while(true){
-     let allTokens = await Token.find({checked:true, createdAt: { $lt: THIRTY_MINUTES_AGO }})
-     let first = Math.floor(allTokens.length/2)
-     let tokens = allTokens.slice(0,first)
-         if(tokens.length > 0){
-             for(let token of tokens){
-                 let marketCap = await getMarketCap(token.mintAddress)
-                 if(marketCap >= token.marketCap * 1.1){
-                         // await new Promise(resolve => setTimeout(resolve, 1000))
-                             let users = await User.find({monitor: true})
-                             for(let user of users){
-                                 await new Promise(resolve => setTimeout(resolve, 1000))
-                            let image
-                            let uri = await (await fetch(token.uri)).json()
-                            if(uri.image  && uri.image.includes("ipfs")){
-                                image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                            }else if(uri.image){
+    let allTokens = await Token.find({checked:true, createdAt: { $lt: THIRTY_MINUTES_AGO }})
+    let first = Math.floor(allTokens.length/2)
+    let tokens = allTokens.slice(0,first)
+        if(tokens.length > 0){
+            for(let token of tokens){
+                let marketCap = await getMarketCap(token.mintAddress)
+                if(marketCap >= token.marketCap * 1.1){
+                    let users = await User.find({monitor: true})
+                    for(let user of users){
+                        await new Promise(resolve => setTimeout(resolve, 1000))
+                        let image
+                        let uri = await (await fetch(token.uri)).json()
+                        if(uri.image  && uri.image.includes("ipfs")){
+                            image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                        }else if(uri.image){
                                 image = uri.image
-                            }
-                            console.log("Image: ",image)
-                             const MESSAGE = `<b> This coins Market Cap has increased! </b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 New Market Cap:</b> $${marketCap}\n<b>📈 Old Market Cap:</b> $${token.marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n`;
-                             
-                                 bot.sendPhoto(user.chatId,image, {
+                        }
+                        console.log("Image: ",image)
+                        const MESSAGE = `<b> This coins Market Cap has increased! </b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 New Market Cap:</b> $${marketCap}\n<b>📈 Old Market Cap:</b> $${token.marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n`;
+                        bot.sendPhoto(user.chatId,image, {
                                      parse_mode: 'HTML',
                                      caption: MESSAGE,
                                      reply_markup: {
@@ -463,13 +461,11 @@ export async function checkTopHoldersAgainFirst(){
                                              ]
                                          ]
                                      }
-                                 });
-                             
-                             }
-                    
-                             token.marketCap = marketCap
-                             await token.save()
-                 }
+                        }); 
+                    }
+                    token.marketCap = marketCap
+                    await token.save()
+                }
                  
             }
         }
@@ -483,13 +479,11 @@ export async function checkTopHoldersAgainSecond(){
         let tokens = allTokens.slice(first)
          if(tokens.length > 0){
              for(let token of tokens){
-                 let marketCap = await getMarketCap(token.mintAddress)
-                 if(marketCap >= token.marketCap * 1.1){
-                         // await new Promise(resolve => setTimeout(resolve, 1000))
-                        
-                             let users = await User.find({monitor: true})
-                             for(let user of users){
-                                 await new Promise(resolve => setTimeout(resolve, 1000))
+                let marketCap = await getMarketCap(token.mintAddress)
+                if(marketCap >= token.marketCap * 1.1){
+                    let users = await User.find({monitor: true})
+                    for(let user of users){
+                            await new Promise(resolve => setTimeout(resolve, 1000))
                             let image
                             let uri = await (await fetch(token.uri)).json()
                             if(uri.image  && uri.image.includes("ipfs")){
@@ -500,30 +494,28 @@ export async function checkTopHoldersAgainSecond(){
                             console.log("Image: ",image)
                              const MESSAGE = `<b> This coins Market Cap has increased! </b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 New Market Cap:</b> $${marketCap}\n<b>📈 Old Market Cap:</b> $${token.marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n`;
                              
-                                 bot.sendPhoto(user.chatId,image, {
-                                     parse_mode: 'HTML',
-                                     caption: MESSAGE,
-                                     reply_markup: {
-                                         inline_keyboard: [
+                                bot.sendPhoto(user.chatId,image, {
+                                    parse_mode: 'HTML',
+                                    caption: MESSAGE,
+                                    reply_markup: {
+                                        inline_keyboard: [
                                              [
                                                  { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
                                              ],
                                              [
                                                  { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
                                              ]
-                                         ]
-                                     }
-                                 });
+                                        ]
+                                    }
+                                });
                              
-                             }
-                         
-                 
-                             token.marketCap = marketCap
-                             await token.save()
-                 }
+                    }
+                    token.marketCap = marketCap
+                    await token.save()
+                }
                
-             }
+            }
          
-         }
-     }
+        }
+    }
 }
