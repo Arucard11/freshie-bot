@@ -18,6 +18,20 @@ const tokenSchema = new Schema({
     bondingCurveAddress: {
         type: String,
     },
+    marketCap: {
+        type: Number,
+        default: 0
+    },
+
+    checked: {
+        type: Boolean,
+        default: false
+    },
+
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const Token = model('Token', tokenSchema);
