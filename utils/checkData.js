@@ -92,7 +92,6 @@ export async function checkTopHoldersFirst(){
                await token.save()
                checkedCoins++
                console.log("Checked Coins: ",checkedCoins)
-               console.log("Saved Market Cap: ",token.marketCap)
            } 
         }
     
@@ -157,7 +156,7 @@ export async function checkTopHoldersMiddle(){
                     await token.save()
                     checkedCoins++
                     console.log("Checked Coins: ",checkedCoins)
-                    console.log("Saved Market Cap: ",token.marketCap)
+                    
                 } 
              }
          
@@ -224,7 +223,7 @@ export async function checkTopHoldersLast(){
                     await token.save()
                     checkedCoins++
                     console.log("Checked Coins: ",checkedCoins)
-                    console.log("Saved Market Cap: ",token.marketCap)
+                    
                 } 
             }
          
@@ -288,7 +287,7 @@ export async function checkTopHoldersFinal(){
                     await token.save()
                     checkedCoins++
                     console.log("Checked Coins: ",checkedCoins)
-                    console.log("Saved Market Cap: ",token.marketCap)
+                    
                 } 
             }
          
@@ -354,7 +353,7 @@ export async function checkTopHoldersEnd(){
                     await token.save()
                     checkedCoins++
                     console.log("Checked Coins: ",checkedCoins)
-                    console.log("Saved Market Cap: ",token.marketCap)
+                    
                 } 
             }
          
@@ -419,7 +418,7 @@ export async function checkTopHoldersComplete(){
                  await token.save()
                  checkedCoins++
                  console.log("Checked Coins: ",checkedCoins)
-                 console.log("Saved Market Cap: ",token.marketCap)
+                 
                 } 
             }
          
