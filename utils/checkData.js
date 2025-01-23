@@ -26,7 +26,7 @@ let checkedCoins = 0
          
         //   const {virtualSolReserves,virtualTokenReserves,realTokenReserves,realSolReserves,tokenTotalSupply} = borsh.deserialize(schema,data);
         
-        await new Promise(resolve => setTimeout(resolve, 3000))
+        await new Promise(resolve => setTimeout(resolve, 1000))
         const {marketcap} = await(await fetch(`https://advanced-api.pump.fun/coins/metadata/${mint}`)).json()
         return marketcap       
 }
