@@ -20,7 +20,7 @@ export async function getHolderInfo(mint) {
         if(accountData && accountData.value &&  accountData.value.data){
           let owner = accountData.value.data.parsed.info.owner
           let signatures = await connection.getSignaturesForAddress(new PublicKey(owner), {limit: 20})
-          if(signatures.length < 20 && owner !== bondingCurve.toBase58() && owner !== associatedBondingCurve.toBase58() && owner !== owners[owners.length-1] &&account.uiAmount > 0){
+          if(signatures.length < 20 && owner !== bondingCurve.toBase58() && owner !== associatedBondingCurve.toBase58() && owner !== owners[owners.length-1] && account.uiAmount > 0){
             owners.push({owner,amount:account.uiAmount})
             amountOfSupply += account.uiAmount      
           }

@@ -1,6 +1,6 @@
 import { parentPort } from "worker_threads";
 import { signatureParse,signatureParseSecond,signatureParseThird } from "./utils/signatureParse.js";
-import{checkTopHoldersFirst,checkTopHoldersMiddle,checkTopHoldersLast,checkTopHoldersAgainFirst,checkTopHoldersAgainSecond} from "./utils/checkData.js"
+import{checkTopHoldersFirst,checkTopHoldersMiddle,checkTopHoldersLast,checkTopHoldersAgainFirst,checkTopHoldersAgainSecond,checkTopHoldersFinal, checkTopHoldersEnd, checkTopHoldersComplete} from "./utils/checkData.js"
 import { connectDB } from "./DB/connect.js";
 
 connectDB();
@@ -17,6 +17,15 @@ parentPort.on('message', async (task) => {
           break;
         case 'last':
           await checkTopHoldersLast();
+          break;
+        case 'final':
+          await checkTopHoldersFinal();
+          break;
+        case 'end':
+          await checkTopHoldersEnd();
+          break;
+        case 'complete':
+          await checkTopHoldersComplete();
           break;
         case 'parseSignatures':
           await signatureParse();

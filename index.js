@@ -105,8 +105,16 @@ bot.on('callback_query', async (query) => {
   const worker8 = new Worker('./worker.js');
   worker8.postMessage('parseSignaturesThird');
   
+  const worker9 = new Worker('./worker.js');
+  worker9.postMessage('final');
 
-  const workers = [worker1, worker2, worker3, worker4, worker5, worker6, worker7,worker8]
+  const worker10 = new Worker('./worker.js');
+  worker10.postMessage('end');
+
+  const worker11 = new Worker('./worker.js');
+  worker11.postMessage('complete');
+
+  const workers = [worker1, worker2, worker3, worker4, worker5, worker6, worker7,worker8,worker9,worker10,worker11];
   
   workers.forEach((worker, index) => {
     worker.on('message', (msg) => {
