@@ -94,12 +94,11 @@ export async function checkTopHoldersFirst(){
 
 export async function checkTopHoldersMiddle(){
     while(true){
-    await new Promise(resolve => setTimeout(resolve, 10000))
      let allTokens = await Token.find({})
      let second = Math.floor(allTokens.length/3)
      let remainder = allTokens.length % 3
      let tokens = allTokens.slice(second,2 * second + remainder)
-         if(tokens.length > 20){
+         if(tokens.length > 10){
              for(let token of tokens){
                  let marketCap = await getMarketCap(token.mintAddress)
                  console.log("Market Cap Middle: ",marketCap)
@@ -156,12 +155,11 @@ export async function checkTopHoldersMiddle(){
 
 export async function checkTopHoldersLast(){
     while(true){
-        await new Promise(resolve => setTimeout(resolve, 10000))
         let allTokens = await Token.find({})
         let last = Math.floor(allTokens.length/3)
         let remainder = allTokens.length % 3
         let tokens = allTokens.slice(2*last + remainder)
-         if(tokens.length > 30){
+         if(tokens.length > 10){
              for(let token of tokens){
                  let marketCap = await getMarketCap(token.mintAddress)
                  console.log("Market Cap Last: ",marketCap)
