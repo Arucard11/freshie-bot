@@ -28,6 +28,10 @@ let checkedCoins = 0
         
         await new Promise(resolve => setTimeout(resolve, 1000))
         const {marketcap} = await(await fetch(`https://advanced-api.pump.fun/coins/metadata/${mint}`)).json()
+        if(!marketcap){
+            console.log("No Market Cap",mint)
+        }
+            return marketcap
         return marketcap       
 }
 //0-25
