@@ -19,7 +19,7 @@ export async function signatureParse() {
             for(let signature of signatures){
                 
                 try{
-            let tx = await connection.getParsedTransaction(signature.signature,{maxSupportedTransactionVersion: 0})
+                let tx = await connection.getParsedTransaction(signature.signature,{maxSupportedTransactionVersion: 0})
                 if(tx && tx.transaction){
                 for(let instruction  of tx.transaction.message.instructions) {
                     if(instruction.programId.toBase58() === pumpFunProgramId.toBase58() && instruction.accounts?.length === 14){
