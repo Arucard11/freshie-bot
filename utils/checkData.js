@@ -37,7 +37,7 @@ let checkedCoins = 0
 //0-25
 export async function checkTopHoldersFirst(){
    while(true){
-    let allTokens = await Token.find({})
+    let allTokens = await Token.find({checked:false})
     let first = Math.floor(allTokens.length/6)
     let tokens = allTokens.slice(0,first)
     if(tokens.length > 10){
@@ -101,7 +101,7 @@ export async function checkTopHoldersFirst(){
 //25-50
 export async function checkTopHoldersMiddle(){
     while(true){
-     let allTokens = await Token.find({})
+     let allTokens = await Token.find({checked:false})
      let second = Math.floor(allTokens.length/6)
      let tokens = allTokens.slice(second, (2 * second))
          if(tokens.length > 10){
@@ -166,7 +166,7 @@ export async function checkTopHoldersMiddle(){
 //50-75
 export async function checkTopHoldersLast(){
     while(true){
-        let allTokens = await Token.find({})
+        let allTokens = await Token.find({checked:false})
         let last = Math.floor(allTokens.length/6)
         let remainder = allTokens.length % 6
         let tokens = allTokens.slice(2*last, (last*3))
@@ -232,7 +232,7 @@ export async function checkTopHoldersLast(){
 }
 export async function checkTopHoldersFinal(){
     while(true){
-        let allTokens = await Token.find({})
+        let allTokens = await Token.find({checked:false})
         let last = Math.floor(allTokens.length/6)
         let remainder = allTokens.length % 6
         let tokens = allTokens.slice( 3*last, (last*4))
@@ -296,7 +296,7 @@ export async function checkTopHoldersFinal(){
 }
 export async function checkTopHoldersEnd(){
     while(true){
-        let allTokens = await Token.find({})
+        let allTokens = await Token.find({checked:false})
         let last = Math.floor(allTokens.length/6)
         let remainder = allTokens.length % 6
         let tokens = allTokens.slice( (4*last), (5*last))
@@ -362,7 +362,7 @@ export async function checkTopHoldersEnd(){
 }
 export async function checkTopHoldersComplete(){
     while(true){
-            let allTokens = await Token.find({})
+            let allTokens = await Token.find({checked:false})
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
             let tokens = allTokens.slice( (5*last),(5*last) + remainder)
@@ -463,9 +463,9 @@ export async function checkTopHoldersAgainFirst(){
                                      }
                         }); 
                     }
-                    token.marketCap = marketCap
-                    await token.save()
                 }
+                token.marketCap = marketCap
+                await token.save()
                  
             }
         }
@@ -510,9 +510,9 @@ export async function checkTopHoldersAgainSecond(){
                                 });
                              
                     }
-                    token.marketCap = marketCap
-                    await token.save()
                 }
+                token.marketCap = marketCap
+                await token.save()
                
             }
          
