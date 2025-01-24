@@ -52,6 +52,9 @@ export async function signatureParse() {
     }
     }catch(e){
         console.error(e)
+        await Signature.findByIdAndDelete(signature._id)
+        console.log("signature deleted")
+
     }
     }    
 }
@@ -100,6 +103,8 @@ export async function signatureParseSecond() {
     }
 }catch(e){
     console.error(e)
+    await Signature.findByIdAndDelete(signature._id)
+            console.log("signature deleted")
 }
     }    
 }
@@ -146,6 +151,8 @@ export async function signatureParseThird() {
         
     }catch(e){
         console.error(e)
+        await Signature.findByIdAndDelete(signature._id)
+            console.log("signature deleted")
     }
         }
     }    
