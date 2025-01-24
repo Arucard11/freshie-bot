@@ -37,8 +37,7 @@ export async function signatureParse() {
                             // console.log("Mint Address: ",mint)
                             // console.log("token info: ",deserialize)
                             await token.save()
-                            let allCoins = await Token.find({})
-                            console.log("Total coins: ", allCoins.length)
+                            
                         }
                     }
                 }
@@ -88,8 +87,7 @@ export async function signatureParseSecond() {
                             // console.log("Mint Address: ",mint)
                             // console.log("token info: ",deserialize)
                             await token.save()
-                            let allCoins = await Token.find({})
-                            console.log("Total coins: ", allCoins.length)
+                          
                         }
                     }
                 }
@@ -137,8 +135,7 @@ export async function signatureParseThird() {
                             // console.log("Mint Address: ",mint)
                             // console.log("token info: ",deserialize)
                             await token.save()
-                            let allCoins = await Token.find({})
-                            console.log("total coins: ", allCoins.length)
+                            
                         }
                     }
                 }
