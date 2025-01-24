@@ -139,8 +139,8 @@ bot.on('callback_query', async (query) => {
             checked: true, // Match items where checked is true
             createdAt: { $lte: ONE_HOUR_AGO }, // Match items created more than 1 hour ago
         });
-
-        console.log(`Deleted ${result.deletedCount} tokens checked more than 1 hour ago`);
+        let notChecked = await Token.find({checked: false})
+        console.log(`Deleted ${result.deletedCount} tokens checked more than 1 hour ago. ${notChecked.length} not checked`);
         bot.sendMessage(1767667773, `Deleted ${result.deletedCount} tokens checked more than 1 hour ago`);
     } catch (error) {
         console.error('Error deleting old tokens:', error);

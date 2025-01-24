@@ -100,6 +100,7 @@ export async function checkTopHoldersFirst(){
 }
 //25-50
 export async function checkTopHoldersMiddle(){
+    try{
     while(true){
      let allTokens = await Token.find({checked:false})
      let second = Math.floor(allTokens.length/6)
@@ -162,6 +163,10 @@ export async function checkTopHoldersMiddle(){
          
          }
      }
+
+    }catch(e){
+        console.log(e)
+    }
 }
 //50-75
 export async function checkTopHoldersLast(){
@@ -429,7 +434,7 @@ export async function checkTopHoldersComplete(){
 export async function checkTopHoldersAgainFirst(){
     const THIRTY_MINUTES_AGO = new Date(Date.now() - 30 * 60 * 1000);  
     while(true){
-    let allTokens = await Token.find({checked:true, createdAt: { $lt: THIRTY_MINUTES_AGO }})
+    let allTokens = await Token.find({checked:true, secondCheck:false, createdAt: { $lt: THIRTY_MINUTES_AGO }})
     let first = Math.floor(allTokens.length/2)
     let tokens = allTokens.slice(0,first)
         if(tokens.length > 0){
@@ -465,6 +470,7 @@ export async function checkTopHoldersAgainFirst(){
                     }
                 }
                 token.marketCap = marketCap
+                token.secondCheck = true
                 await token.save()
                  
             }
@@ -474,7 +480,7 @@ export async function checkTopHoldersAgainFirst(){
 export async function checkTopHoldersAgainSecond(){
     const THIRTY_MINUTES_AGO = new Date(Date.now() - 30 * 60 * 1000);
     while(true){
-        let allTokens = await Token.find({checked:true, createdAt: { $lt: THIRTY_MINUTES_AGO }})
+        let allTokens = await Token.find({checked:true, secondCheck:false, createdAt: { $lt: THIRTY_MINUTES_AGO }})
         let first = Math.floor(allTokens.length/2)
         let tokens = allTokens.slice(first)
          if(tokens.length > 0){
@@ -512,6 +518,7 @@ export async function checkTopHoldersAgainSecond(){
                     }
                 }
                 token.marketCap = marketCap
+                token.secondCheck = true
                 await token.save()
                
             }

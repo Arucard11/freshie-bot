@@ -27,7 +27,10 @@ const tokenSchema = new Schema({
         type: Boolean,
         default: false
     },
-
+    secondCheck:{
+        type:Boolean,
+        default:false
+    },
     createdAt: {
         type: Date,
         default: Date.now
