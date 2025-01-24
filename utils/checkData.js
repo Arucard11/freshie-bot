@@ -41,7 +41,7 @@ export async function checkTopHoldersFirst(){
             let allTokens = await Token.find({checked:false})
             let first = Math.floor(allTokens.length/6)
             let tokens = allTokens.slice(0,first)
-            if(tokens.length > 10){
+            if(tokens.length > 1){
                 console.log("Tokens First: ",tokens.length)
                 for(let token of tokens){
                     if(!token.checked){
@@ -109,7 +109,7 @@ export async function checkTopHoldersMiddle(){
         let allTokens = await Token.find({checked:false})
         let second = Math.floor(allTokens.length/6)
         let tokens = allTokens.slice(second, (2 * second))
-            if(tokens.length > 10){
+            if(tokens.length > 1){
                 console.log("Tokens Middle: ",tokens.length)
                 for(let token of tokens){
                     if(!token.checked){
@@ -179,7 +179,7 @@ export async function checkTopHoldersLast(){
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
             let tokens = allTokens.slice(2*last, (last*3))
-            if(tokens.length > 5){
+            if(tokens.length > 1){
                 console.log("Tokens Last: ",tokens.length)
                 for(let token of tokens){
                     if(!token.checked){
@@ -248,7 +248,7 @@ export async function checkTopHoldersFinal(){
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
             let tokens = allTokens.slice( 3*last, (last*4))
-            if(tokens.length > 10){
+            if(tokens.length > 1){
                 console.log("Tokens Final: ",tokens.length)
                 for(let token of tokens){
                     if(!token.checked){
@@ -315,7 +315,7 @@ export async function checkTopHoldersEnd(){
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
             let tokens = allTokens.slice( (4*last), (5*last))
-            if(tokens.length > 10){
+            if(tokens.length > 1){
                 console.log("Tokens End: ",tokens.length)
                 for(let token of tokens){
                     if(!token.checked){
@@ -384,7 +384,7 @@ export async function checkTopHoldersComplete(){
                 let last = Math.floor(allTokens.length/6)
                 let remainder = allTokens.length % 6
                 let tokens = allTokens.slice( (5*last),(5*last) + remainder)
-            if(tokens.length > 3){
+            if(tokens.length > 1){
                 console.log("Tokens Complete: ",tokens.length)
                 for(let token of tokens){
                     if(!token.checked){

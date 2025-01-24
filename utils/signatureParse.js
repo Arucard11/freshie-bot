@@ -7,8 +7,7 @@ import Signature from "../DB/signatures.js"
 const connection = new Connection(`https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`,"confirmed");
 const pumpFunProgramId = new PublicKey("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P");
 
-let coinsAdded = 0
-let signaturesDeleted = 0
+
 export async function signatureParse() {
 
     while(true){
@@ -38,8 +37,8 @@ export async function signatureParse() {
                             // console.log("Mint Address: ",mint)
                             // console.log("token info: ",deserialize)
                             await token.save()
-                            coinsAdded++
-                            console.log("Coins Added: ", coinsAdded)
+                            let allCoins = await Token.find({})
+                            console.log("Total coins: ", allCoins.length)
                         }
                     }
                 }
@@ -84,8 +83,8 @@ export async function signatureParseSecond() {
                             // console.log("Mint Address: ",mint)
                             // console.log("token info: ",deserialize)
                             await token.save()
-                            coinsAdded++
-                            console.log("Coins Added: ", coinsAdded)
+                            let allCoins = await Token.find({})
+                            console.log("Total coins: ", allCoins.length)
                         }
                     }
                 }
@@ -130,8 +129,8 @@ export async function signatureParseThird() {
                             // console.log("Mint Address: ",mint)
                             // console.log("token info: ",deserialize)
                             await token.save()
-                            coinsAdded++
-                            console.log("Coins Added: ", coinsAdded)
+                            let allCoins = await Token.find({})
+                            console.log("total coins: ", allCoins.length)
                         }
                     }
                 }

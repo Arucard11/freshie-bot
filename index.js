@@ -80,55 +80,63 @@ bot.on('callback_query', async (query) => {
     
   });
   
-
-  const worker1 = new Worker('./worker.js');
-  worker1.postMessage('first'); // Assign task "loop1" to worker1
-  // Start Worker for Loop 2
-  const worker2 = new Worker('./worker.js');
-  worker2.postMessage('middle'); // Assign task "loop2" to worker2
-  // Start Worker for Loop 3
-  const worker3 = new Worker('./worker.js');
-  worker3.postMessage('last'); // Assign task "loop3" to worker3
+  // Task assignments for workers
+  const tasks = [
+    'first',
+    'middle',
+    'last',
+    'parseSignatures',
+    'parseSignaturesSecond',
+    'checkAgainFirst',
+    'checkAgainSecond',
+    'parseSignaturesThird',
+    'final',
+    'end',
+    'complete',
+  ];
   
-  const worker4 = new Worker('./worker.js');
-  worker4.postMessage('parseSignatures');
-
-  const worker5 = new Worker('./worker.js');
-  worker5.postMessage('parseSignaturesSecond');
-
-  const worker6 = new Worker('./worker.js');
-  worker6.postMessage('checkAgainFirst');
+  // Function to create a new worker and assign the appropriate task
+  function createWorker(index) {
+    const worker = new Worker('./worker.js');
+    worker.postMessage(tasks[index]);
+    console.log(`Worker ${index + 1} assigned task: "${tasks[index]}"`);
+    return worker;
+  }
   
-  const worker7 = new Worker('./worker.js');
-  worker7.postMessage('checkAgainSecond');
+  // Initialize all workers
+  const workers = tasks.map((_, index) => createWorker(index));
   
-  const worker8 = new Worker('./worker.js');
-  worker8.postMessage('parseSignaturesThird');
+  // Function to restart a worker
+  function restartWorker(index) {
+    console.log(`Restarting Worker ${index + 1}...`);
+    workers[index] = createWorker(index); // Create a new worker
+    setupWorkerListeners(workers[index], index); // Reapply event listeners
+  }
   
-  const worker9 = new Worker('./worker.js');
-  worker9.postMessage('final');
-
-  const worker10 = new Worker('./worker.js');
-  worker10.postMessage('end');
-
-  const worker11 = new Worker('./worker.js');
-  worker11.postMessage('complete');
-
-  const workers = [worker1, worker2, worker3, worker4, worker5, worker6, worker7,worker8,worker9,worker10,worker11];
-  
-  workers.forEach((worker, index) => {
+  // Set up event listeners for each worker
+  function setupWorkerListeners(worker, index) {
     worker.on('message', (msg) => {
-      console.log(`Message from Loop ${index + 1}:`, msg);
+      console.log(`Message from Worker ${index + 1}:`, msg);
     });
   
     worker.on('error', (err) => {
-      console.error(`Error in Loop ${index + 1}:`, err);
+      console.error(`Error in Worker ${index + 1}:`, err);
+      restartWorker(index); // Restart worker on error
     });
   
     worker.on('exit', (code) => {
-      console.log(`Loop ${index + 1} exited with code ${code}`);
+      console.log(`Worker ${index + 1} exited with code ${code}`);
+      if (code !== 0) {
+        restartWorker(index); // Restart worker if exit code is non-zero
+      }
     });
+  }
+  
+  // Apply listeners to all initial workers
+  workers.forEach((worker, index) => {
+    setupWorkerListeners(worker, index);
   });
+  
 
   cron.schedule('0 * * * *', async () => {
     try {
