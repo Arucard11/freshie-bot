@@ -10,7 +10,7 @@ import TelegramBot from 'node-telegram-bot-api'
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false });
 
-let checkedCoins = 0
+
 
  async function getMarketCap(mint){
     // const LAMPORTS_PER_SOL = 10n ** 9n
@@ -26,143 +26,146 @@ let checkedCoins = 0
          
         //   const {virtualSolReserves,virtualTokenReserves,realTokenReserves,realSolReserves,tokenTotalSupply} = borsh.deserialize(schema,data);
         
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise(resolve => setTimeout(resolve, 2000))
         const {marketcap} = await(await fetch(`https://advanced-api.pump.fun/coins/metadata/${mint}`)).json()
         if(!marketcap){
-            console.log("No Market Cap",mint)
+            console.log("No Market Cap","https://pump.fun/coin/"+mint)
         }
             return marketcap
-        return marketcap       
+        
 }
 //0-25
 export async function checkTopHoldersFirst(){
-   while(true){
-    let allTokens = await Token.find({checked:false})
-    let first = Math.floor(allTokens.length/6)
-    let tokens = allTokens.slice(0,first)
-    if(tokens.length > 10){
-        console.log("Tokens First: ",tokens.length)
-        for(let token of tokens){
-           if(!token.checked){
-               let marketCap = await getMarketCap(token.mintAddress) 
-               if(marketCap >= 8000){
-                       let holderInfo = await getHolderInfo(token.mintAddress)
-                       if(holderInfo){
-                           let users = await User.find({monitor: true})
-                           for(let user of users){
-                               await new Promise(resolve => setTimeout(resolve, 1000))
-                               const walletLinks = holderInfo.owners
-                               .map(
-                                   (wallet) =>
-                                       `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
-                               )
-                               .join('');
-                           
-                               let image
-                               let uri = await (await fetch(token.uri)).json()
-                               if(uri.image  && uri.image.includes("ipfs")){
-                                      image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                               }else if(uri.image){
-                                      image = uri.image
-                               }
-                          console.log("Image: ",image)
-                           const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
-                           
-                               bot.sendPhoto(user.chatId, image, {
-                                   parse_mode: 'HTML',
-                                   caption: MESSAGE,
-                                   reply_markup: {
-                                       inline_keyboard: [
-                                          [
-                                              { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
-                                          ],
-                                          [
-                                              { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
-                                          ]
-                                       ]
-                                   }
-                               });
-                           
-                          }
-                          }
-               
-               }
-               token.checked = true
-               token.marketCap = marketCap
-               await token.save()
-               checkedCoins++
-               console.log("Checked Coins: ",checkedCoins)
-           } 
+    try{  
+        while(true){
+            let allTokens = await Token.find({checked:false})
+            let first = Math.floor(allTokens.length/6)
+            let tokens = allTokens.slice(0,first)
+            if(tokens.length > 10){
+                console.log("Tokens First: ",tokens.length)
+                for(let token of tokens){
+                    if(!token.checked){
+                        let marketCap = await getMarketCap(token.mintAddress) 
+                        if(marketCap >= 8000){
+                                let holderInfo = await getHolderInfo(token.mintAddress)
+                                if(holderInfo){
+                                    let users = await User.find({monitor: true})
+                                    for(let user of users){
+                                        await new Promise(resolve => setTimeout(resolve, 1000))
+                                        const walletLinks = holderInfo.owners
+                                        .map(
+                                            (wallet) =>
+                                                `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                        )
+                                        .join('');
+                                    
+                                        let image
+                                        let uri = await (await fetch(token.uri)).json()
+                                        if(uri.image  && uri.image.includes("ipfs")){
+                                                image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                                        }else if(uri.image){
+                                                image = uri.image
+                                        }
+                                    console.log("Image: ",image)
+                                    const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                                    
+                                        bot.sendPhoto(user.chatId, image, {
+                                            parse_mode: 'HTML',
+                                            caption: MESSAGE,
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                    [
+                                                        { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                    ],
+                                                    [
+                                                        { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
+                                                    ]
+                                                ]
+                                            }
+                                        });
+                                    
+                                    }
+                                    }
+                        
+                        }
+                        token.checked = true
+                        token.marketCap = marketCap
+                        await token.save()
+                        let total = await Token.find({checked:false})
+                        console.log("total coins unchecked: ",total)
+                    } 
+                }
+            
+            }
         }
-    
-    }
-    }
+    }catch(e){
+        console.log(e)
+    }  
 }
 //25-50
 export async function checkTopHoldersMiddle(){
     try{
-    while(true){
-     let allTokens = await Token.find({checked:false})
-     let second = Math.floor(allTokens.length/6)
-     let tokens = allTokens.slice(second, (2 * second))
-         if(tokens.length > 10){
-            console.log("Tokens Middle: ",tokens.length)
-             for(let token of tokens){
-                if(!token.checked){
-                    let marketCap = await getMarketCap(token.mintAddress)  
-                    if(marketCap >= 8000){
-                            let holderInfo = await getHolderInfo(token.mintAddress)
-                            if(holderInfo){
-                                let users = await User.find({monitor: true})
-                                for(let user of users){
-                                    await new Promise(resolve => setTimeout(resolve, 1000))
-                                    const walletLinks = holderInfo.owners
-                                    .map(
-                                        (wallet) =>
-                                            `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
-                                    )
-                                    .join('');
-                                
-                                    let image
-                                    let uri = await (await fetch(token.uri)).json()
-                                    if(uri.image  && uri.image.includes("ipfs")){
-                                           image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                                    }else if(uri.image){
-                                           image = uri.image
-                                    }
-                               console.log("Image: ",image)
-                                const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
-                                
-                                    bot.sendPhoto(user.chatId, image, {
-                                        parse_mode: 'HTML',
-                                        caption: MESSAGE,
-                                        reply_markup: {
-                                            inline_keyboard: [
-                                               [
-                                                   { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
-                                               ],
-                                               [
-                                                   { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
-                                               ]
-                                            ]
+        while(true){
+        let allTokens = await Token.find({checked:false})
+        let second = Math.floor(allTokens.length/6)
+        let tokens = allTokens.slice(second, (2 * second))
+            if(tokens.length > 10){
+                console.log("Tokens Middle: ",tokens.length)
+                for(let token of tokens){
+                    if(!token.checked){
+                        let marketCap = await getMarketCap(token.mintAddress)  
+                        if(marketCap >= 8000){
+                                let holderInfo = await getHolderInfo(token.mintAddress)
+                                if(holderInfo){
+                                    let users = await User.find({monitor: true})
+                                    for(let user of users){
+                                        await new Promise(resolve => setTimeout(resolve, 1000))
+                                        const walletLinks = holderInfo.owners
+                                        .map(
+                                            (wallet) =>
+                                                `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                        )
+                                        .join('');
+                                    
+                                        let image
+                                        let uri = await (await fetch(token.uri)).json()
+                                        if(uri.image  && uri.image.includes("ipfs")){
+                                            image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                                        }else if(uri.image){
+                                            image = uri.image
                                         }
-                                    });
-                                
-                               }
-                               }
-                    
-                    }
-                    token.checked = true
-                    token.marketCap = marketCap
-                    await token.save()
-                    checkedCoins++
-                    console.log("Checked Coins: ",checkedCoins)
-                    
-                } 
-             }
-         
-         }
-     }
+                                console.log("Image: ",image)
+                                    const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                                    
+                                        bot.sendPhoto(user.chatId, image, {
+                                            parse_mode: 'HTML',
+                                            caption: MESSAGE,
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                [
+                                                    { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                ],
+                                                [
+                                                    { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
+                                                ]
+                                                ]
+                                            }
+                                        });
+                                    
+                                    }
+                                }
+                        
+                        }
+                        token.checked = true
+                        token.marketCap = marketCap
+                        await token.save()
+                        let total = await Token.find({checked:false})
+                        console.log("total coins unchecked: ",total) 
+                    } 
+                }
+            
+            }
+        }
 
     }catch(e){
         console.log(e)
@@ -170,265 +173,277 @@ export async function checkTopHoldersMiddle(){
 }
 //50-75
 export async function checkTopHoldersLast(){
-    while(true){
-        let allTokens = await Token.find({checked:false})
-        let last = Math.floor(allTokens.length/6)
-        let remainder = allTokens.length % 6
-        let tokens = allTokens.slice(2*last, (last*3))
-         if(tokens.length > 5){
-            console.log("Tokens Last: ",tokens.length)
-             for(let token of tokens){
-                if(!token.checked){
-                    let marketCap = await getMarketCap(token.mintAddress)
-                    if(marketCap >= 8000){
-                            // await new Promise(resolve => setTimeout(resolve, 1000))
-                            let holderInfo = await getHolderInfo(token.mintAddress)
-                            if(holderInfo){
-                                let users = await User.find({monitor: true})
-                                for(let user of users){
-                                    await new Promise(resolve => setTimeout(resolve, 1000))
-                                    const walletLinks = holderInfo.owners
-                                    .map(
-                                        (wallet) =>
-                                            `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
-                                    )
-                                    .join('');
-                                
-                                    let image
-                                    let uri = await (await fetch(token.uri)).json()
-                                    if(uri.image  && uri.image.includes("ipfs")){
-                                           image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                                    }else if(uri.image){
-                                           image = uri.image
-                                    }
-                               console.log("Image: ",image)
-                                const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
-                                
-                                    bot.sendPhoto(user.chatId, image, {
-                                        parse_mode: 'HTML',
-                                        caption: MESSAGE,
-                                        reply_markup: {
-                                            inline_keyboard: [
-                                               [
-                                                   { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
-                                               ],
-                                               [
-                                                   { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
-                                               ]
-                                            ]
-                                        }
-                                    });
-                                
-                               }
-                               }
-                    
-                    }
-                    token.checked = true
-                    token.marketCap = marketCap
-                    await token.save()
-                    checkedCoins++
-                    console.log("Checked Coins: ",checkedCoins)
-                    
-                } 
-            }
-         
-        }
-    }
-}
-export async function checkTopHoldersFinal(){
-    while(true){
-        let allTokens = await Token.find({checked:false})
-        let last = Math.floor(allTokens.length/6)
-        let remainder = allTokens.length % 6
-        let tokens = allTokens.slice( 3*last, (last*4))
-         if(tokens.length > 10){
-            console.log("Tokens Final: ",tokens.length)
-             for(let token of tokens){
-                if(!token.checked){
-                    let marketCap = await getMarketCap(token.mintAddress)
-                    if(marketCap >= 8000){
-                            let holderInfo = await getHolderInfo(token.mintAddress)
-                            if(holderInfo){
-                                let users = await User.find({monitor: true})
-                                for(let user of users){
-                                    await new Promise(resolve => setTimeout(resolve, 1000))
-                                    const walletLinks = holderInfo.owners
-                                    .map(
-                                        (wallet) =>
-                                            `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
-                                    )
-                                    .join('');
-                                
-                                    let image
-                                    let uri = await (await fetch(token.uri)).json()
-                                    if(uri.image  && uri.image.includes("ipfs")){
-                                           image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                                    }else if(uri.image){
-                                           image = uri.image
-                                    }
-                               console.log("Image: ",image)
-                                const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
-                                
-                                    bot.sendPhoto(user.chatId, image, {
-                                        parse_mode: 'HTML',
-                                        caption: MESSAGE,
-                                        reply_markup: {
-                                            inline_keyboard: [
-                                               [
-                                                   { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
-                                               ],
-                                               [
-                                                   { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
-                                               ]
-                                            ]
-                                        }
-                                    });
-                                
-                               }
-                            }
-                    }
-                    token.checked = true
-                    token.marketCap = marketCap
-                    await token.save()
-                    checkedCoins++
-                    console.log("Checked Coins: ",checkedCoins)
-                    
-                } 
-            }
-         
-        }
-    }
-}
-export async function checkTopHoldersEnd(){
-    while(true){
-        let allTokens = await Token.find({checked:false})
-        let last = Math.floor(allTokens.length/6)
-        let remainder = allTokens.length % 6
-        let tokens = allTokens.slice( (4*last), (5*last))
-         if(tokens.length > 10){
-            console.log("Tokens End: ",tokens.length)
-             for(let token of tokens){
-                if(!token.checked){
-                    let marketCap = await getMarketCap(token.mintAddress)
-                    if(marketCap >= 8000){
-                            // await new Promise(resolve => setTimeout(resolve, 1000))
-                            let holderInfo = await getHolderInfo(token.mintAddress)
-                            if(holderInfo){
-                                let users = await User.find({monitor: true})
-                                for(let user of users){
-                                    await new Promise(resolve => setTimeout(resolve, 1000))
-                                    const walletLinks = holderInfo.owners
-                                    .map(
-                                        (wallet) =>
-                                            `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
-                                    )
-                                    .join('');
-                                
-                                    let image
-                                    let uri = await (await fetch(token.uri)).json()
-                                    if(uri.image  && uri.image.includes("ipfs")){
-                                           image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                                    }else if(uri.image){
-                                           image = uri.image
-                                    }
-                               console.log("Image: ",image)
-                                const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
-                                
-                                    bot.sendPhoto(user.chatId, image, {
-                                        parse_mode: 'HTML',
-                                        caption: MESSAGE,
-                                        reply_markup: {
-                                            inline_keyboard: [
-                                               [
-                                                   { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
-                                               ],
-                                               [
-                                                   { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
-                                               ]
-                                            ]
-                                        }
-                                    });
-                                
-                               }
-                               }
-                    
-                    }
-                    token.checked = true
-                    token.marketCap = marketCap
-                    await token.save()
-                    checkedCoins++
-                    console.log("Checked Coins: ",checkedCoins)
-                    
-                } 
-            }
-         
-        }
-    }
-}
-export async function checkTopHoldersComplete(){
-    while(true){
+    try{
+        while(true){
             let allTokens = await Token.find({checked:false})
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
-            let tokens = allTokens.slice( (5*last),(5*last) + remainder)
-         if(tokens.length > 3){
-            console.log("Tokens Complete: ",tokens.length)
-             for(let token of tokens){
-                if(!token.checked){
-                 let marketCap = await getMarketCap(token.mintAddress)
-                 if(marketCap >= 8000){  
-                         let holderInfo = await getHolderInfo(token.mintAddress)
-                         if(holderInfo){
-                             let users = await User.find({monitor: true})
-                             for(let user of users){
-                                 await new Promise(resolve => setTimeout(resolve, 1000))
-                                 const walletLinks = holderInfo.owners
-                                 .map(
-                                     (wallet) =>
-                                         `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
-                                 )
-                                 .join('');
-                             
-                                 let image
-                                 let uri = await (await fetch(token.uri)).json()
-                                 if(uri.image  && uri.image.includes("ipfs")){
-                                        image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
-                                 }else if(uri.image){
-                                        image = uri.image
-                                 }
-                            console.log("Image: ",image)
-                             const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
-                             
-                                 bot.sendPhoto(user.chatId, image, {
-                                     parse_mode: 'HTML',
-                                     caption: MESSAGE,
-                                     reply_markup: {
-                                         inline_keyboard: [
-                                            [
-                                                { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
-                                            ],
-                                            [
-                                                { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
-                                            ]
-                                         ]
-                                     }
-                                 });
-                             
-                            }
-                            }
-                 
-                 }
-                 token.checked = true
-                 token.marketCap = marketCap
-                 await token.save()
-                 checkedCoins++
-                 console.log("Checked Coins: ",checkedCoins)
-                 
-                } 
+            let tokens = allTokens.slice(2*last, (last*3))
+            if(tokens.length > 5){
+                console.log("Tokens Last: ",tokens.length)
+                for(let token of tokens){
+                    if(!token.checked){
+                        let marketCap = await getMarketCap(token.mintAddress)
+                        if(marketCap >= 8000){
+                                // await new Promise(resolve => setTimeout(resolve, 1000))
+                                let holderInfo = await getHolderInfo(token.mintAddress)
+                                if(holderInfo){
+                                    let users = await User.find({monitor: true})
+                                    for(let user of users){
+                                        await new Promise(resolve => setTimeout(resolve, 1000))
+                                        const walletLinks = holderInfo.owners
+                                        .map(
+                                            (wallet) =>
+                                                `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                        )
+                                        .join('');
+                                    
+                                        let image
+                                        let uri = await (await fetch(token.uri)).json()
+                                        if(uri.image  && uri.image.includes("ipfs")){
+                                            image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                                        }else if(uri.image){
+                                            image = uri.image
+                                        }
+                                console.log("Image: ",image)
+                                    const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                                    
+                                        bot.sendPhoto(user.chatId, image, {
+                                            parse_mode: 'HTML',
+                                            caption: MESSAGE,
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                [
+                                                    { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                ],
+                                                [
+                                                    { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
+                                                ]
+                                                ]
+                                            }
+                                        });
+                                    
+                                }
+                                }
+                        
+                        }
+                        token.checked = true
+                        token.marketCap = marketCap
+                        await token.save()
+                        let total = await Token.find({checked:false})
+                        console.log("total coins unchecked: ",total)
+                    } 
+                }
+            
             }
-         
-         }
-    }
+        }
+    }catch(e){
+        console.log(e)
+    }    
+}
+export async function checkTopHoldersFinal(){
+    try{
+        while(true){
+            let allTokens = await Token.find({checked:false})
+            let last = Math.floor(allTokens.length/6)
+            let remainder = allTokens.length % 6
+            let tokens = allTokens.slice( 3*last, (last*4))
+            if(tokens.length > 10){
+                console.log("Tokens Final: ",tokens.length)
+                for(let token of tokens){
+                    if(!token.checked){
+                        let marketCap = await getMarketCap(token.mintAddress)
+                        if(marketCap >= 8000){
+                                let holderInfo = await getHolderInfo(token.mintAddress)
+                                if(holderInfo){
+                                    let users = await User.find({monitor: true})
+                                    for(let user of users){
+                                        await new Promise(resolve => setTimeout(resolve, 1000))
+                                        const walletLinks = holderInfo.owners
+                                        .map(
+                                            (wallet) =>
+                                                `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                        )
+                                        .join('');
+                                    
+                                        let image
+                                        let uri = await (await fetch(token.uri)).json()
+                                        if(uri.image  && uri.image.includes("ipfs")){
+                                            image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                                        }else if(uri.image){
+                                            image = uri.image
+                                        }
+                                console.log("Image: ",image)
+                                    const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                                    
+                                        bot.sendPhoto(user.chatId, image, {
+                                            parse_mode: 'HTML',
+                                            caption: MESSAGE,
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                [
+                                                    { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                ],
+                                                [
+                                                    { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
+                                                ]
+                                                ]
+                                            }
+                                        });
+                                    
+                                }
+                                }
+                        }
+                        token.checked = true
+                        token.marketCap = marketCap
+                        await token.save()
+                        let total = await Token.find({checked:false})
+                        console.log("total coins unchecked: ",total)   
+                    } 
+                }
+            
+            }
+        }
+    }catch(e){
+        console.log(e)
+    }    
+}
+export async function checkTopHoldersEnd(){
+    try{
+        while(true){
+            let allTokens = await Token.find({checked:false})
+            let last = Math.floor(allTokens.length/6)
+            let remainder = allTokens.length % 6
+            let tokens = allTokens.slice( (4*last), (5*last))
+            if(tokens.length > 10){
+                console.log("Tokens End: ",tokens.length)
+                for(let token of tokens){
+                    if(!token.checked){
+                        let marketCap = await getMarketCap(token.mintAddress)
+                        if(marketCap >= 8000){
+                                // await new Promise(resolve => setTimeout(resolve, 1000))
+                                let holderInfo = await getHolderInfo(token.mintAddress)
+                                if(holderInfo){
+                                    let users = await User.find({monitor: true})
+                                    for(let user of users){
+                                        await new Promise(resolve => setTimeout(resolve, 1000))
+                                        const walletLinks = holderInfo.owners
+                                        .map(
+                                            (wallet) =>
+                                                `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                        )
+                                        .join('');
+                                    
+                                        let image
+                                        let uri = await (await fetch(token.uri)).json()
+                                        if(uri.image  && uri.image.includes("ipfs")){
+                                            image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                                        }else if(uri.image){
+                                            image = uri.image
+                                        }
+                                console.log("Image: ",image)
+                                    const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                                    
+                                        bot.sendPhoto(user.chatId, image, {
+                                            parse_mode: 'HTML',
+                                            caption: MESSAGE,
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                [
+                                                    { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                ],
+                                                [
+                                                    { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
+                                                ]
+                                                ]
+                                            }
+                                        });
+                                    
+                                }
+                                }
+                        
+                        }
+                        token.checked = true
+                        token.marketCap = marketCap
+                        await token.save()
+                        let total = await Token.find({checked:false})
+                        console.log("total coins unchecked: ",total)   
+                    } 
+                }
+            
+            }
+        }
+    }catch(e){
+        console.log(e)
+    }    
+}
+export async function checkTopHoldersComplete(){
+    try{
+        while(true){
+                let allTokens = await Token.find({checked:false})
+                let last = Math.floor(allTokens.length/6)
+                let remainder = allTokens.length % 6
+                let tokens = allTokens.slice( (5*last),(5*last) + remainder)
+            if(tokens.length > 3){
+                console.log("Tokens Complete: ",tokens.length)
+                for(let token of tokens){
+                    if(!token.checked){
+                    let marketCap = await getMarketCap(token.mintAddress)
+                    if(marketCap >= 8000){  
+                            let holderInfo = await getHolderInfo(token.mintAddress)
+                            if(holderInfo){
+                                let users = await User.find({monitor: true})
+                                for(let user of users){
+                                    await new Promise(resolve => setTimeout(resolve, 1000))
+                                    const walletLinks = holderInfo.owners
+                                    .map(
+                                        (wallet) =>
+                                            `👛 <b>Balance:</b> ${wallet.amount.toFixed(0)} - <a href="https://solscan.io/account/${wallet.owner}">View Wallet (${wallet.owner.slice(0, 10)}...)</a>\n`
+                                    )
+                                    .join('');
+                                
+                                    let image
+                                    let uri = await (await fetch(token.uri)).json()
+                                    if(uri.image  && uri.image.includes("ipfs")){
+                                            image = uri.image.replace("https://ipfs.io/","https://pump.mypinata.cloud/")    
+                                    }else if(uri.image){
+                                            image = uri.image
+                                    }
+                                console.log("Image: ",image)
+                                const MESSAGE = `<b> Fresh/Aged Wallets are buying 💎</b>\n\n<b>Mint Address: </b><code>${token.mintAddress}</code>\n\n<b>📈 Market Cap:</b> $${marketCap}\n🪙<b>Token Name: ${token.name}</b>\n\n🔗 <b>Symbol: </b> <a href="https://t.me/share/url?url=$${token.symbol}">$${token.symbol}</a>\n💰 <b>Fresh Wallets hold: ${((holderInfo.amountOfSupply /10**9)*100).toFixed(2)}% of the total supply</b>\n\n<b>🔥 Fresh Wallets:</b>\n${walletLinks}`;
+                                
+                                    bot.sendPhoto(user.chatId, image, {
+                                        parse_mode: 'HTML',
+                                        caption: MESSAGE,
+                                        reply_markup: {
+                                            inline_keyboard: [
+                                                [
+                                                    { text: 'Snipe on Photon 💥', url: `https://photon-sol.tinyastro.io/en/lp/${token.mintAddress}` }
+                                                ],
+                                                [
+                                                    { text: 'Buy on pumpFun 🎲', url: `https://pump.fun/coin/${token.mintAddress}` }
+                                                ]
+                                            ]
+                                        }
+                                    });
+                                
+                                }
+                                }
+                    
+                    }
+                    token.checked = true
+                    token.marketCap = marketCap
+                    await token.save()
+                    let total = await Token.find({checked:false})
+                    console.log("total coins unchecked: ",total)
+                    } 
+                }
+            
+            }
+        }
+    }catch(e){
+        console.log(e)
+    }    
 }
 
 export async function checkTopHoldersAgainFirst(){
