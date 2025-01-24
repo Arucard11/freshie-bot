@@ -92,7 +92,7 @@ export async function checkTopHoldersFirst(){
                         token.marketCap = marketCap
                         await token.save()
                         let total = await Token.find({checked:false})
-                        console.log("total coins unchecked: ",total)
+                        console.log("total coins unchecked: ",total.length)
                     } 
                 }
             
@@ -160,7 +160,7 @@ export async function checkTopHoldersMiddle(){
                         token.marketCap = marketCap
                         await token.save()
                         let total = await Token.find({checked:false})
-                        console.log("total coins unchecked: ",total) 
+                        console.log("total coins unchecked: ",total.length) 
                     } 
                 }
             
@@ -231,7 +231,7 @@ export async function checkTopHoldersLast(){
                         token.marketCap = marketCap
                         await token.save()
                         let total = await Token.find({checked:false})
-                        console.log("total coins unchecked: ",total)
+                        console.log("total coins unchecked: ",total.length)
                     } 
                 }
             
@@ -298,7 +298,7 @@ export async function checkTopHoldersFinal(){
                         token.marketCap = marketCap
                         await token.save()
                         let total = await Token.find({checked:false})
-                        console.log("total coins unchecked: ",total)   
+                        console.log("total coins unchecked: ",total.length)   
                     } 
                 }
             
@@ -367,7 +367,7 @@ export async function checkTopHoldersEnd(){
                         token.marketCap = marketCap
                         await token.save()
                         let total = await Token.find({checked:false})
-                        console.log("total coins unchecked: ",total)   
+                        console.log("total coins unchecked: ",total.length)   
                     } 
                 }
             
@@ -435,7 +435,7 @@ export async function checkTopHoldersComplete(){
                     token.marketCap = marketCap
                     await token.save()
                     let total = await Token.find({checked:false})
-                    console.log("total coins unchecked: ",total)
+                    console.log("total coins unchecked: ",total.length)
                     } 
                 }
             
