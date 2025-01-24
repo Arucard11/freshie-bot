@@ -383,7 +383,7 @@ export async function checkTopHoldersComplete(){
                 let allTokens = await Token.find({checked:false})
                 let last = Math.floor(allTokens.length/6)
                 let remainder = allTokens.length % 6
-                let tokens = allTokens.slice( (5*last),(5*last) + remainder)
+                let tokens = allTokens.slice( (5*last) +remainder)
             if(tokens.length > 1){
                 console.log("Tokens Complete: ",tokens.length)
                 for(let token of tokens){

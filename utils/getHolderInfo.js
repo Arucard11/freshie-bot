@@ -67,5 +67,5 @@ export async function getHolderInfo(mint, maxRetries = 3) {
     }
   }
 
-  throw new Error('Max retries reached. Unable to fetch holder info.');
+ 
 }
