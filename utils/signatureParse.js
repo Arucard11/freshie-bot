@@ -14,10 +14,10 @@ export async function signatureParse() {
         let allSignatures = await Signature.find({})
         let start = Math.floor(allSignatures.length/3)
         let signatures = allSignatures.slice(0,start)
+        try{
         if(signatures.length > 0){
             for(let signature of signatures){
                 
-                try{
                 let tx = await connection.getParsedTransaction(signature.signature,{maxSupportedTransactionVersion: 0})
                 if(tx && tx.transaction){
                 for(let instruction  of tx.transaction.message.instructions) {
@@ -43,14 +43,16 @@ export async function signatureParse() {
                     }
                 }
             }
-                }catch(e){
-                    console.error(e)
-                }
+            
+            await Signature.findByIdAndDelete(signature._id)
+            console.log("signature deleted")
 
-                await Signature.findByIdAndDelete(signature._id)
-            }            
+        }            
         
-        }
+    }
+    }catch(e){
+        console.error(e)
+    }
     }    
 }
 export async function signatureParseSecond() {
@@ -60,10 +62,10 @@ export async function signatureParseSecond() {
         let start = Math.floor(allSignatures.length/3)
         let remainder = allSignatures.length%3
         let signatures = allSignatures.slice(start,2*start + remainder)
+        try{
         if(signatures.length > 0){
             for(let signature of signatures){
                
-                try{
             let tx = await connection.getParsedTransaction(signature.signature,{maxSupportedTransactionVersion: 0})
                 if(tx && tx.transaction){
                 for(let instruction  of tx.transaction.message.instructions) {
@@ -89,15 +91,16 @@ export async function signatureParseSecond() {
                     }
                 }
             }
-                }catch(e){
-                    console.error(e)
-                }
+            
+            await Signature.findByIdAndDelete(signature._id)
+            console.log("signature deleted")
 
-                await Signature.findByIdAndDelete(signature._id)
-                
-            }            
+        }            
         
-        }
+    }
+}catch(e){
+    console.error(e)
+}
     }    
 }
 export async function signatureParseThird() {
@@ -108,8 +111,8 @@ export async function signatureParseThird() {
         let remainder = allSignatures.length%3
         let signatures = allSignatures.slice(2*start + remainder)
         if(signatures.length > 0){
+            try{
             for(let signature of signatures){
-                try{
                 let tx = await connection.getParsedTransaction(signature.signature,{maxSupportedTransactionVersion: 0})
                 if(tx && tx.transaction){
                 for(let instruction  of tx.transaction.message.instructions) {
@@ -135,14 +138,15 @@ export async function signatureParseThird() {
                     }
                 }
             }
-                }catch(e){
-                    console.error(e)
-                }
-
-                await Signature.findByIdAndDelete(signature._id)
-                
-            }            
+            
+            await Signature.findByIdAndDelete(signature._id)
+            console.log("signature deleted")
+            
+        }            
         
+    }catch(e){
+        console.error(e)
+    }
         }
     }    
 }
