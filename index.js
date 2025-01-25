@@ -121,14 +121,15 @@ bot.on('callback_query', async (query) => {
   
     worker.on('error', (err) => {
       console.error(`Error in Worker ${index + 1}:`, err);
+      console.log("restarting worker")
       restartWorker(index); // Restart worker on error
     });
   
     worker.on('exit', (code) => {
       console.log(`Worker ${index + 1} exited with code ${code}`);
-      if (code !== 0) {
+        console.log("restarting worker")
         restartWorker(index); // Restart worker if exit code is non-zero
-      }
+      
     });
   }
   
@@ -149,7 +150,7 @@ bot.on('callback_query', async (query) => {
         });
         let notChecked = await Token.find({checked: false})
         console.log(`Deleted ${result.deletedCount} tokens checked more than 1 hour ago. ${notChecked.length} not checked`);
-        bot.sendMessage(1767667773, `Deleted ${result.deletedCount} tokens checked more than 1 hour ago`);
+        bot.sendMessage(1767667773, `Deleted ${result.deletedCount} tokens checked more than 1 hour ago.  ${notChecked.length} not checked`);
     } catch (error) {
         console.error('Error deleting old tokens:', error);
     }

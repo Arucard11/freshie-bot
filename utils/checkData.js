@@ -40,7 +40,7 @@ export async function checkTopHoldersFirst(){
         while(true){
             let allTokens = await Token.find({checked:false})
             let first = Math.floor(allTokens.length/6)
-            let tokens = allTokens.slice(0,first)
+            let tokens = allTokens.slice(0,first-1)
             if(tokens.length > 1){
                 console.log("Tokens First: ",tokens.length)
                 for(let token of tokens){
@@ -108,7 +108,7 @@ export async function checkTopHoldersMiddle(){
         while(true){
         let allTokens = await Token.find({checked:false})
         let second = Math.floor(allTokens.length/6)
-        let tokens = allTokens.slice(second, (2 * second))
+        let tokens = allTokens.slice(second, (2 * second)-1)
             if(tokens.length > 1){
                 console.log("Tokens Middle: ",tokens.length)
                 for(let token of tokens){
@@ -177,7 +177,7 @@ export async function checkTopHoldersLast(){
             let allTokens = await Token.find({checked:false})
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
-            let tokens = allTokens.slice(2*last, (last*3))
+            let tokens = allTokens.slice(2*last, (last*3)-1)
             if(tokens.length > 1){
                 console.log("Tokens Last: ",tokens.length)
                 for(let token of tokens){
@@ -245,7 +245,7 @@ export async function checkTopHoldersFinal(){
             let allTokens = await Token.find({checked:false})
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
-            let tokens = allTokens.slice( 3*last, (last*4))
+            let tokens = allTokens.slice( 3*last, (last*4)-1)
             if(tokens.length > 1){
                 console.log("Tokens Final: ",tokens.length)
                 for(let token of tokens){
@@ -311,7 +311,7 @@ export async function checkTopHoldersEnd(){
             let allTokens = await Token.find({checked:false})
             let last = Math.floor(allTokens.length/6)
             let remainder = allTokens.length % 6
-            let tokens = allTokens.slice( (4*last), (5*last))
+            let tokens = allTokens.slice( (4*last), (5*last)-1)
             if(tokens.length > 1){
                 console.log("Tokens End: ",tokens.length)
                 for(let token of tokens){
@@ -448,6 +448,7 @@ export async function checkTopHoldersAgainFirst(){
     let first = Math.floor(allTokens.length/2)
     let tokens = allTokens.slice(0,first)
         if(tokens.length > 0){
+            console.log("second check worker one ")
             for(let token of tokens){
                 let marketCap = await getMarketCap(token.mintAddress)
                 if(marketCap >= token.marketCap * 1.1){
@@ -494,6 +495,8 @@ export async function checkTopHoldersAgainSecond(){
         let first = Math.floor(allTokens.length/2)
         let tokens = allTokens.slice(first)
          if(tokens.length > 0){
+            console.log("second check worker two")
+
              for(let token of tokens){
                 let marketCap = await getMarketCap(token.mintAddress)
                 if(marketCap >= token.marketCap * 1.1){
