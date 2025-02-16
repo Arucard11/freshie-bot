@@ -85,90 +85,100 @@ bot.on('callback_query', async (query) => {
     'first',
     'middle',
     'last',
-    'parseSignatures',
-    'parseSignaturesSecond',
-    'checkAgainFirst',
-    'checkAgainSecond',
-    'parseSignaturesThird',
     'final',
     'end',
     'complete',
-  ];
-  
-  // Function to create a new worker and assign the appropriate task
-  function createWorker(index) {
-    const worker = new Worker('./worker.js');
+    'parseSignatures',
+    'parseSignaturesSecond',
+    'parseSignaturesThird',
+    'checkTopHoldersAgainFirst',
+    'checkTopHoldersAgainSecond',
+    'checkTopHoldersAgainThird',
+    'checkTopHoldersAgainFourth',
+    'checkTopHoldersAgainFifth',
+    'checkTopHoldersAgainSixth'
+];
+
+// Function to create a new worker and assign the appropriate task
+function createWorker(index) {
+    const worker = new Worker('./worker.js'); // Ensure correct path
     worker.postMessage(tasks[index]);
     console.log(`Worker ${index + 1} assigned task: "${tasks[index]}"`);
-    return worker;
-  }
-  
-  // Initialize all workers
-  const workers = tasks.map((_, index) => createWorker(index));
-  
-  // Function to restart a worker
-  function restartWorker(index) {
-    console.log(`Restarting Worker ${index + 1}...`);
-    workers[index] = createWorker(index); // Create a new worker
-    setupWorkerListeners(workers[index], index); // Reapply event listeners
-  }
-  
-  // Set up event listeners for each worker
-  function setupWorkerListeners(worker, index) {
-    worker.on('message', (msg) => {
-      console.log(`Message from Worker ${index + 1}:`, msg);
-    });
-  
-    worker.on('error', (err) => {
-      console.error(`Error in Worker ${index + 1}:`, err);
-      console.log("restarting worker")
-      restartWorker(index); // Restart worker on error
-    });
-  
-    worker.on('exit', (code) => {
-      console.log(`Worker ${index + 1} exited with code ${code}`);
-        console.log("restarting worker")
-        restartWorker(index); // Restart worker if exit code is non-zero
-      
-    });
-  }
-  
-  // Apply listeners to all initial workers
-  workers.forEach((worker, index) => {
     setupWorkerListeners(worker, index);
-  });
-  
+    return worker;
+}
 
-  cron.schedule('0 * * * *', async () => {
-    try {
-        const ONE_HOUR_AGO = new Date(Date.now() - 1 * 60 * 60 * 1000); // 1 hour ago
-        
-        // Delete tokens checked more than 1 hour ago
-        const result = await Token.deleteMany({
-            checked: true, // Match items where checked is true
-            createdAt: { $lte: ONE_HOUR_AGO }, // Match items created more than 1 hour ago
-        });
-        let notChecked = await Token.find({checked: false})
-        console.log(`Deleted ${result.deletedCount} tokens checked more than 1 hour ago. ${notChecked.length} not checked`);
-        bot.sendMessage(1767667773, `Deleted ${result.deletedCount} tokens checked more than 1 hour ago.  ${notChecked.length} not checked`);
-    } catch (error) {
-        console.error('Error deleting old tokens:', error);
+// Initialize all workers
+let workers = tasks.map((_, index) => createWorker(index));
+
+// Function to restart a worker **only if it failed**
+function restartWorker(index, force = false) {
+    if (!force) {
+        console.log(`✅ Worker ${index + 1} completed successfully. Not restarting.`);
+        return;
     }
-});;
-  
-  
- 
-  process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-  });
-  
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  });
+    console.log(`🔄 Restarting Worker ${index + 1}...`);
+    workers[index] = createWorker(index); // Create a new worker
+}
 
-  process.on('SIGINT', () => {
-    console.log('Shutting down workers...');
-    workers.forEach((worker) => worker.terminate());
+// Set up event listeners for each worker
+function setupWorkerListeners(worker, index) {
+    worker.on('message', (msg) => {
+        console.log(`📩 Message from Worker ${index + 1}:`, msg);
+
+        // ✅ Only restart the worker if it **failed**, not if it completed successfully
+        if (msg.includes("Error")) {
+            console.log(`⚠️ Worker ${index + 1} encountered an error. Restarting...`);
+            restartWorker(index, true);
+        }
+    });
+
+    worker.on('error', (err) => {
+        console.error(`❌ Error in Worker ${index + 1}:`, err);
+        console.log("Restarting worker due to error...");
+        restartWorker(index, true);
+    });
+
+    worker.on('exit', (code) => {
+        if (code === 0) {
+            console.log(`✅ Worker ${index + 1} exited successfully.`);
+        } else {
+            console.log(`⚠️ Worker ${index + 1} exited with error code ${code}. Restarting...`);
+            restartWorker(index, true);
+        }
+    });
+}
+
+// Ensure all initial workers have event listeners
+workers.forEach((worker, index) => setupWorkerListeners(worker, index));
+
+// ✅ Graceful shutdown on CTRL + C
+process.on('SIGINT', () => {
+    console.log("\n🛑 Gracefully shutting down workers...");
+
+    workers.forEach((worker, index) => {
+        console.log(`🛑 Stopping Worker ${index + 1}...`);
+        worker.terminate();
+    });
+
+    console.log("✅ All workers stopped. Exiting process.");
     process.exit(0);
-  });
+});
   // console.log('Main thread is running...');
+cron.schedule('0 */6 * * *', async () => {
+          try {
+              const SIX_HOURS_AGO = new Date(Date.now() - 6 * 60 * 60 * 1000); // 6 hours ago
+              
+              // Delete tokens checked more than 6 hours ago
+              const result = await Token.deleteMany({
+                  checked: true, // Match items where checked is true
+                  createdAt: { $lte: SIX_HOURS_AGO }, // Match items created more than 6 hours ago
+              });
+              
+              let notChecked = await Token.find({ checked: false });
+              console.log(`Deleted ${result.deletedCount} tokens checked more than 6 hours ago. ${notChecked.length} not checked`);
+              bot.sendMessage(1767667773, `Deleted ${result.deletedCount} tokens checked more than 6 hours ago. ${notChecked.length} not checked`);
+          } catch (error) {
+              console.error('Error deleting old tokens:', error);                
+          }
+});

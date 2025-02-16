@@ -41,15 +41,10 @@ export async function getHolderInfo(mint, maxRetries = 3) {
             }
           }
 
-          if (owners.length >= 10) {
-            validCoins++;
-            console.log("Valid coin found", validCoins);
-            return { owners, amountOfSupply };
-          }
         }
       }
 
-      if (owners.length >= 3) {
+      if (owners.length >= 2) {
         validCoins++;
         console.log("Valid coin found", validCoins);
         return { owners, amountOfSupply };

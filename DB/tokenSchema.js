@@ -34,6 +34,10 @@ const tokenSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    owners:{
+        type: Number,
+        default:0
     }
 });
 

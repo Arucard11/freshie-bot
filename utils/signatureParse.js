@@ -136,16 +136,15 @@ export async function signatureParseThird() {
                         }
                     }
                 }
-            }
+                }
+                    await Signature.findByIdAndDelete(signature._id)
             
-            await Signature.findByIdAndDelete(signature._id)
             
-            
-        }catch(e){
-            console.error(e)
-            await Signature.findByIdAndDelete(signature._id)      
-        }
-        }            
+                }catch(e){
+                    console.error(e)
+                    await Signature.findByIdAndDelete(signature._id)      
+                }
+            }            
         
         }
     }    
